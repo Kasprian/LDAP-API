@@ -28,7 +28,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import java.util.Arrays;
 
 @Configuration
-@EnableWebSecurity
+//@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
@@ -36,43 +36,14 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/login", "/register", "/public/**", "/css/**", "/js/**", "/images/**").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login").defaultSuccessUrl("/", true)
+                        .loginPage("/login")
                         .permitAll()
                 )
                 .logout(LogoutConfigurer::permitAll);
         return http.build();
-    }
-
-    @Bean
-    @Qualifier("securityContextSource")
-    public BaseLdapPathContextSource securityContextSource() {
-        // Security context source configuration
-        return new LdapContextSource();
-    }
-
-    @Bean
-    public LdapAuthenticator ldapAuthenticator(LdapContextSource contextSource) {
-        BindAuthenticator authenticator = new BindAuthenticator(contextSource);
-        authenticator.setUserSearch(new FilterBasedLdapUserSearch("ou=people", "(uid={0})", contextSource));
-        return authenticator;
-    }
-
-    @Bean
-    public LdapAuthenticationProvider ldapAuthenticationProvider(LdapAuthenticator ldapAuthenticator, LdapContextSource contextSource) {
-        DefaultLdapAuthoritiesPopulator authoritiesPopulator = new DefaultLdapAuthoritiesPopulator(contextSource, "ou=groups");
-        authoritiesPopulator.setGroupRoleAttribute("cn");
-
-        LdapAuthenticationProvider provider = new LdapAuthenticationProvider(ldapAuthenticator, authoritiesPopulator);
-        provider.setUserDetailsContextMapper(userDetailsContextMapper());
-        return provider;
-    }
-
-    @Bean
-    public UserDetailsContextMapper userDetailsContextMapper() {
-        return new UserDetailsContextMapperImpl();
     }
 
     @Bean

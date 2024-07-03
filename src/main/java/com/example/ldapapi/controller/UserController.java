@@ -15,14 +15,4 @@ public class UserController {
     public User register(@RequestBody User user) {
         return userService.register(user);
     }
-
-    @GetMapping("/login")
-    public String login() {
-        return "login";
-    }
-
-    @GetMapping("/")
-    public String home() {
-        return "home";
-    }
 }
